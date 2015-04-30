@@ -12,6 +12,7 @@ function navigate(url) {
   });
 }
 
-chrome.omnibox.onInputEntered.addListener(function(text) {
-  navigate("http://www.ratemyprofessors.com/search.jsp?query=" + text);
+chrome.omnibox.onInputEntered.addListener(function(searchName) {
+  navigate('http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=sierra+college&queryoption=HEADER&query='
+  + searchName + '&facetSearch=true');
 });

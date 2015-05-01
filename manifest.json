@@ -1,7 +1,7 @@
 {
    	"manifest_version": 2,
    	"name": "Sierra College RMP",
-  	"description": "A plain text description",
+  	"description": "A plain text description", //TODO
    	"version": "1.0",
   	"default_locale": "en",
 

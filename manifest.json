@@ -17,6 +17,9 @@
   	},
   	
   	"background": {
+      // TODO: add event page so the script only runs on mysierra https://developer.chrome.com/extensions/event_pages
+      //"scripts": ["eventpage.js"]
     	"scripts": ["background.js"]
+      //"persistent": false //once event page is implemented
   	}
 }

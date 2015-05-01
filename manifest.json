@@ -3,7 +3,6 @@
    	"name": "Sierra College RMP",
   	"description": "A plain text description", //TODO
    	"version": "1.0",
-  	"default_locale": "en",
 
   	"author": "Kyle Szombathy",
   	"author": "William Hexberg",

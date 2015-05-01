@@ -21,7 +21,7 @@ chrome.omnibox.onInputEntered.addListener(function(searchName) {
 
 // Context menu implementation
 chrome.contextMenus.create({
-    "title": "Search for Professor Ratings",
+    "title": "Search professor ratings for '%s'",
     "contexts": ["selection"],
     "onclick": function(e) {
         var url = "http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=sierra+college&queryoption=HEADER&query="

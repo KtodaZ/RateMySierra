@@ -25,6 +25,6 @@
     "permissions": [
       "tabs",
       "contextMenus",
-      "http://www.ratemyprofessors.com/*"
+      "http://www.ratemyprofessors.com/*" // May not be needed
     ]
 }

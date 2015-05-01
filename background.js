@@ -4,7 +4,6 @@ function resetDefaultSuggestion() {
   description: 'Search RateMyProfessor for %s'
   });
 }
-
 resetDefaultSuggestion();
 
 function navigate(url) {
@@ -14,19 +13,22 @@ function navigate(url) {
 }
 
 chrome.omnibox.onInputEntered.addListener(function(searchName) {
-  navigate('http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=sierra+college&queryoption=HEADER&query='
-  + searchName + '&facetSearch=true');
+  navigate(returnUrl(searchName));
 });
-
 
 // Context menu implementation
 chrome.contextMenus.create({
-    "title": "Search professor ratings for '%s'",
+    "title": "Search RateMyProfessor for %s",
     "contexts": ["selection"],
     "onclick": function(e) {
-        var url = "http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=sierra+college&queryoption=HEADER&query="
-            + encodeURI(e.selectionText) + "&facetSearch=true";
+        var url = returnUrl(e.selectionText);
         chrome.tabs.create(
             {"url" : url });
     }
 });
+
+// Misc functions
+function returnUrl(nameString) {
+    return "http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=sierra+college&queryoption=HEADER&query="
+        + encodeURI(nameString) + "&facetSearch=true";
+}

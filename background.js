@@ -23,14 +23,14 @@ chrome.contextMenus.create({
     "title": "Search RateMyProfessor for %s",
     "contexts": ["selection"],
     "onclick": function(e) {
-        var url = returnUrl(e.selectionText); // Searches RMP for selected text
+        var url = returnUrl(e.selectionText); // creates url for RMP with selected text
         chrome.tabs.create(
             {"url" : url });
     }
 });
 
 // Misc functions
-function returnUrl(nameString) {
+function returnUrl(profNameWithSpace) {
     return "http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=" + schoolName +
-           "&queryoption=HEADER&query=" + encodeURI(nameString) + "&facetSearch=true";
+           "&queryoption=HEADER&query=" + encodeURI(profNameWithSpace) + "&facetSearch=true";
 }

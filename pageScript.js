@@ -1,17 +1,25 @@
 /**
  * Created by Kyle on 5/3/2015.
- * Planning to use this file to parse the names and stuff
+ * Main work goes in this file
+ * We can also call functions from background.js in this file because background.js is loaded before this file
  */
-//TODO: everything
-var cells      = document.getElementsByClassName('default1');
-var professors = [];
-alert("1");
 
-for(var i =0; i < cells.length; i++) {
-    var temporary = $.trim(cell[i].innerText);
+// Gets professor names and returns string array. className is the class name of the class that the names are in
+function getProfessorNames(className) {
+    var cell      = document.getElementsByClassName(className); // Gives cell[i] an object containing data of className
+    var professor = [];
 
-    if (cell[i].text.length:has)
-    var profName = cells[i].innerText.slice(0,-1);
-    alert (profName);
+    for(var i =0; i < cell.length; i++) {
+        // Splits into separate string arrays seen here: http://imgur.com/fhgmsEm
+        var profNameArray = [];
+        profNameArray = cell[i].innerText.trim().split(/[ ]+/);
 
+        if (profNameArray.length === 2) { //TODO: Additional exceptions for strings that contain non-name characters
+            console.log(profNameArray); // For debugging (use ctrl-shift-J)
+            professor[i] = profNameArray[0] + " " + profNameArray[1];
+            console.log(professor[i]); // For debugging
+        }
+    }
+    return professor;
 }
+var professors = getProfessorNames('default1');

@@ -1,3 +1,5 @@
+var schoolName = "sierra + college";
+
 // OmniBox search implementation
 function resetDefaultSuggestion() {
   chrome.omnibox.setDefaultSuggestion({
@@ -21,7 +23,7 @@ chrome.contextMenus.create({
     "title": "Search RateMyProfessor for %s",
     "contexts": ["selection"],
     "onclick": function(e) {
-        var url = returnUrl(e.selectionText);
+        var url = returnUrl(e.selectionText); // Searches RMP for selected text
         chrome.tabs.create(
             {"url" : url });
     }
@@ -29,6 +31,6 @@ chrome.contextMenus.create({
 
 // Misc functions
 function returnUrl(nameString) {
-    return "http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=sierra+college&queryoption=HEADER&query="
-        + encodeURI(nameString) + "&facetSearch=true";
+    return "http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=" + schoolName +
+           "&queryoption=HEADER&query=" + encodeURI(nameString) + "&facetSearch=true";
 }

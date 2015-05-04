@@ -16,7 +16,7 @@
   	},
   	
   	"background": {
-      // TODO: add event page so the script only runs on mysierra https://developer.chrome.com/extensions/event_pages
+      // TODO: add event page
       //"scripts": ["eventpage.js"]
     	"scripts": ["background.js"]
       //"persistent": false //enable once event page is implemented
@@ -26,5 +26,12 @@
       "tabs",
       "contextMenus",
       "http://www.ratemyprofessors.com/*" // May not be needed
-    ]
+    ],
+
+    "content_scripts": [
+	  {
+		"matches": ["https://banprodssb.sierracollege.edu:8810/PROD/pw_sigsched.p_process"], //So scripts only runs on Sierra website
+		"js": ["pageScript.js"]
+	  }
+	]
 }

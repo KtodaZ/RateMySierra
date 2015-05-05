@@ -9,7 +9,7 @@ function getProfessorNames(className) {
     var cell      = document.getElementsByClassName(className); // Gives cell[i] an object containing data of className
     var professor = [];
 
-    for(var i =0; i < 100; i++) {
+    for(var i =0; i < cell.length; i++) {
         // Splits into separate string arrays seen here: http://imgur.com/fhgmsEm
         var profNameArray = [];
         profNameArray = cell[i].innerText.trim().split(/[ ]+/);
@@ -28,13 +28,15 @@ function getProfessorNames(className) {
 
 // jQuery animation popup
 function popup(cell) {
-    //TODO: This function works on mouse over, but it needs to be modified so that it will display a text box or whatever
+    //TODO: This function works on mouse over, but it needs to be modified so that it will display a text box or whatever also see http://www.2meter3.de/code/hoverFlow/demos.html
     $(cell).hover(function(){
-        $(this).filter(':not(:animated)').animate({ width: "200px" });
+        //$(this).filter(':not(:animated)').animate({ width: "200px" });
+        console.log("mouse on")
     }, function() {
-        $(this).animate({ width: "100px" });
-        console.log("Test");
+        //$(this).animate({ width: "100px" });
+        console.log("mouse off");
     });
 }
 
 var professors = getProfessorNames('default1');
+console.log("Script done")

@@ -31,7 +31,7 @@
     "content_scripts": [
 	  {
 		"matches": ["https://banprodssb.sierracollege.edu:8810/PROD/pw_sigsched.p_process"], //So scripts only runs on Sierra website
-		"js": ["pageScript.js"]
+		"js": ["jquery-2.1.3.js", "pageScript.js"]
 	  }
 	]
 }

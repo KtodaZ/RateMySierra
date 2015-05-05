@@ -18,6 +18,7 @@ function getProfessorNames(className) {
             console.log(profNameArray); // For debugging (use ctrl-shift-J)
             professor[i] = profNameArray[0] + " " + profNameArray[1];
             console.log(professor[i]); // For debugging
+            //TODO: Jquery functionality goes here, using cell[i] object type
         }
     }
     return professor;

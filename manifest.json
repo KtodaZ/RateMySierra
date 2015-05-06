@@ -677,7 +677,7 @@ Public License instead of this License.  But first, please read
 {
    	"manifest_version": 2,
    	"name": "Sierra College RMP",
-  	"description": "A plain text description", //TODO
+  	"description": "A plain text description",
    	"version": "1.0",
 
   	"author": "Kyle Szombathy",
@@ -692,10 +692,7 @@ Public License instead of this License.  But first, please read
   	},
   	
   	"background": {
-      // TODO: add event page
-      //"scripts": ["eventpage.js"]
-    	"scripts": ["background.js"]
-      //"persistent": false //enable once event page is implemented
+      "scripts": ["background.js"]
   	},
 
     "permissions": [
@@ -707,7 +704,10 @@ Public License instead of this License.  But first, please read
     "content_scripts": [
 	  {
 		"matches": ["https://banprodssb.sierracollege.edu:8810/PROD/pw_sigsched.p_process"], //So scripts only runs on Sierra website
-		"js": ["jquery-2.1.3.js", "pageScript.js"]
+		"js": [
+          "jquery-2.1.3.js",
+          "main.js"
+        ]
 	  }
 	]
 }

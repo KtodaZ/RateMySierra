@@ -700,11 +700,16 @@ chrome.contextMenus.create({
     "title": "Search RateMyProfessor for %s",
     "contexts": ["selection"],
     "onclick": function(e) {
-        var url = returnUrl(e.selectionText); // creates url for RMP with selected text
-        chrome.tabs.create(
-            {"url" : url });
+        var profNameWithSpace = e.selectionText;
+        searchNewTab(profNameWithSpace);
     }
 });
+
+function searchNewTab(profNameWithSpace) {
+    var url = returnUrl(profNameWithSpace); // creates url for RMP with selected text
+    chrome.tabs.create(
+        {"url": url});
+}
 
 // Misc functions
 function returnUrl(profNameWithSpace) {

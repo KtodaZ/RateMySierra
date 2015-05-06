@@ -1,7 +1,6 @@
 /**
  * Created by Kyle on 5/3/2015.
  * Main work goes in this file
- * We can also call functions from background.js in this file because background.js is loaded before this file
  */
 /*
  GNU GENERAL PUBLIC LICENSE
@@ -680,40 +679,61 @@
  <http://www.gnu.org/philosophy/why-not-lgpl.html>.
 
  */
+var schoolName = "sierra + college";
 
 // Gets professor names and returns string array. className is the class name of the class that the names are in
 function getProfessorNames(className) {
-    var cell      = document.getElementsByClassName(className); // Gives cell[i] an object containing data of className
+    var cell      = document.getElementsByClassName(className);
     var professor = [];
 
     for(var i =0; i < cell.length; i++) {
-        // Splits into separate string arrays seen here: http://imgur.com/fhgmsEm
+        // Gets text from object array and splits it by each space
         var profNameArray = [];
-        profNameArray = cell[i].innerText.trim().split(/[ ]+/);
+        profNameArray = $(cell[i]).text().trim().split(/[ ]+/);
 
-        if (profNameArray.length === 2) { //TODO: Additional exceptions for strings that contain non-name characters
+        // Sorts out all professor name
+        if (profNameArray.length === 2) {
             professor[i] = profNameArray[0] + " " + profNameArray[1];
-            //console.log(profNameArray); // For debugging (use ctrl-shift-J)
-            console.log(professor[i]); // For debugging
 
-            //TODO: Jquery functionality goes here, using cell[i] object type also see https://css-tricks.com/full-jquery-animations/
-            popup(cell[i]);
+            // Now that we know the cell that the name is in, we can apply actions to the specific cell
+            // Creates hyperlink to search page
+            $(cell[i]).text('');
+            $('<a href="'+returnSearchUrl(professor[i])+'">'+professor[i]+'</a>').appendTo($(cell[i]));
         }
     }
-    return professor;
 }
 
 // jQuery animation popup
-function popup(cell) {
-    //TODO: This function works on mouse over, but it needs to be modified so that it will display a text box or whatever also see http://www.2meter3.de/code/hoverFlow/demos.html
-    $(cell).hover(function(){
-        //$(this).filter(':not(:animated)').animate({ width: "200px" });
-        console.log("mouse on")
-    }, function() {
-        //$(this).animate({ width: "100px" });
-        console.log("mouse off");
-    });
+// TODO
+function popup(cell, profNameArray) {
+    /*
+     $(cell).click(function() {
+     searchNewTab(profNameArray);
+     });
+
+
+     $(cell).hover(function(){
+     //$(this).filter(':not(:animated)').animate({ width: "200px" });
+     console.log("mouse on");
+     }, function() {
+     //$(this).animate({ width: "100px" });
+     console.log("mouse off");
+     });
+     */
 }
 
-var professors = getProfessorNames('default1');
-console.log("Script done")
+// Misc functions
+function returnSearchUrl(profNameWithSpace) {
+    return "http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=" + schoolName +
+        "&queryoption=HEADER&query=" + encodeURI(profNameWithSpace) + "&facetSearch=true";
+}
+
+// Gets teacher actual
+function returnProfUrl(profNameWithSpace) {
+
+}
+
+
+getProfessorNames('default1');
+getProfessorNames('default2');
+console.log("Script done");

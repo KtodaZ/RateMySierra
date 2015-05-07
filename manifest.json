@@ -692,7 +692,8 @@ Public License instead of this License.  But first, please read
   	},
   	
   	"background": {
-      "scripts": ["background.js"]
+      "scripts": ["eventPage.js"],
+      "persistent": false
   	},
 
     "permissions": [

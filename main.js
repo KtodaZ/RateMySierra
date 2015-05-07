@@ -686,7 +686,7 @@ function getProfessorNames(className) {
     var cell      = document.getElementsByClassName(className);
     var professor = [];
 
-    for(var i =0; i < cell.length; i++) {
+    for(var i =0; i < 100; i++) {
         // Gets text from object array and splits it by each space
         var profNameArray = [];
         profNameArray = $(cell[i]).text().trim().split(/[ ]+/);
@@ -697,8 +697,9 @@ function getProfessorNames(className) {
 
             // Now that we know the cell that the name is in, we can apply actions to the specific cell
             // Creates hyperlink to search page
-            $(cell[i]).text('');
-            $('<a href="'+returnSearchUrl(professor[i])+'">'+professor[i]+'</a>').appendTo($(cell[i]));
+            //$(cell[i]).text('');
+            //$('<a href="'+returnSearchUrl(professor[i])+'">'+professor[i]+'</a>').appendTo($(cell[i]));
+            var url = returnProfUrl(professor[i]);
         }
     }
 }
@@ -728,9 +729,55 @@ function returnSearchUrl(profNameWithSpace) {
         "&queryoption=HEADER&query=" + encodeURI(profNameWithSpace) + "&facetSearch=true";
 }
 
-// Gets teacher actual
+// Gets teachers actual URL, if more than one option or no result - returns search page URL
 function returnProfUrl(profNameWithSpace) {
+    var className = 'listing PROFESSOR';
+    var searchURL = returnSearchUrl(profNameWithSpace);
 
+    chrome.runtime.sendMessage({                          //need a separate event page to do the xmlhttprequest because of http to https issue
+        url: searchURL,
+    }, function (responseText) {
+
+        var tmp        = document.createElement('div');  //make a temp element so that we can search through its html
+        tmp.innerHTML  = responseText;
+        var foundProfs = tmp.getElementsByClassName('listing PROFESSOR');
+        console.log(foundProfs);
+        //console.log(length);
+
+        /*
+         // Code that I was testing that I don't want to delete just yet
+
+         $.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent('http://google.com') + '&callback=?', function(data){
+         alert(data.contents);
+         });
+
+         var html = $(".listing.PROFESSOR").load(searchURL); // Returns html object of prof search page
+         var length = html.length;
+         console.log(html);
+         console.log(length);
+        */
+
+        if (foundProfs.length = 1) {
+            var links     = tmp.getElementsByTagName("a");
+            console.log(links);
+            for (var l = 0; l < links.length; l++){
+                if (links[l].href == "/ShowRatings.jsp?tid=*") {
+                    console.log(links[l]);
+                }
+            }
+            //var profURL = 'http://www.ratemyprofessors.com/' + link[0].toString().slice(23); //this is the URL
+            //console.log(link);
+            //return profURL;
+        }
+        else { // If no results or more than one prof are found
+            return searchURL;
+        }
+
+        return "";
+        //var foundProfs = document.getElementsByClassName('listing PROFESSOR');
+        //console.log(foundProfs);
+
+    });
 }
 
 

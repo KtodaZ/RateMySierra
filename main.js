@@ -712,11 +712,10 @@ function getProfessorNames(className) {
 
 // jQuery hover function
 function hover(cell, profName) {
-     $(cell).hover(function(){
-     // Gets actual teacher URLS and applies them to page
-    returnProfUrl(cell, profName); // TODO: make it so that it does not load multiple times on each mousover
-     }, function() {
-     });
+    $(cell).mouseenter(function() {
+        // Gets actual teacher URLS and applies them to page
+        returnProfUrl(cell, profName); // TODO: make it so that it does not load multiple times on each mousover
+    });
 }
 
 // Misc functions

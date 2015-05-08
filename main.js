@@ -680,26 +680,36 @@
 
  */
 var schoolName = "sierra + college";
+var profArrayGlobal = [];
+var cellArrayGlobal = [];
 
-// Gets professor names and returns string array. className is the class name of the class that the names are in
+// Gets profNameArray names and returns string array. className is the class name of the class that the names are in
 function getProfessorNames(className) {
-    var cell      = document.getElementsByClassName(className);
-    var professor = [];
+    var cellArray      = document.getElementsByClassName(className);
+    var profNameArray = [];
+    var profTempArray = [];
 
-    for(var i =0; i < 100; i++) {
-        // Gets text from object array and splits it by each space
-        var profNameArray = [];
-        profNameArray = $(cell[i]).text().trim().split(/[ ]+/);
+    for(var i =0; i < cellArray.length; i++) {
+        // Gets text from object array and splits into name strings by each space
+        profTempArray = $(cellArray[i]).text().trim().split(/[ ]+/);
 
-        // Sorts out all professor name
-        if (profNameArray.length === 2) {
-            professor[i] = profNameArray[0] + " " + profNameArray[1];
+        // Finds which class cell actually has professor names
+        if (profTempArray.length === 2) {
+            // Now that we know where the names are we can save that data in global arrays
+            cellArrayGlobal.push(cellArray[i]);
+            profNameArray[i] = profTempArray[0] + " " + profTempArray[1];
+            profArrayGlobal.push(profNameArray[i]);
 
-            // Now that we know the cell that the name is in, we can apply actions to the specific cell
-            // Creates hyperlink to search page
-            //$(cell[i]).text('');
-            //$('<a href="'+returnSearchUrl(professor[i])+'">'+professor[i]+'</a>').appendTo($(cell[i]));
-            var url = returnProfUrl(professor[i]);
+            // Tries to get actual teacher URLS
+            var url = returnProfUrl(profNameArray[i], i); // TODO: This works, just doesn't return here, it executes after getProfessorNames('default1'); and getProfessorNames('default2');. I think this is because of chrome.runtime.sendMessage({
+            console.log("url: " + url);
+
+            if (url == undefined) {
+                url = returnSearchUrl(profNameArray[i]);
+            }
+
+            $(cellArray[i]).text('');
+            $('<a href="'+ url +'">'+profNameArray[i]+'</a>').appendTo($(cellArray[i]));
         }
     }
 }
@@ -708,6 +718,7 @@ function getProfessorNames(className) {
 // TODO
 function popup(cell, profNameArray) {
     /*
+    // Leaving this stuff here for possible later use
      $(cell).click(function() {
      searchNewTab(profNameArray);
      });
@@ -730,57 +741,54 @@ function returnSearchUrl(profNameWithSpace) {
 }
 
 // Gets teachers actual URL, if more than one option or no result - returns search page URL
-function returnProfUrl(profNameWithSpace) {
+function returnProfUrl(profNameWithSpace, i) {
     var className = 'listing PROFESSOR';
     var searchURL = returnSearchUrl(profNameWithSpace);
 
     chrome.runtime.sendMessage({                          //need a separate event page to do the xmlhttprequest because of http to https issue
-        url: searchURL,
+        url: searchURL
     }, function (responseText) {
 
         var tmp        = document.createElement('div');  //make a temp element so that we can search through its html
         tmp.innerHTML  = responseText;
-        var foundProfs = tmp.getElementsByClassName('listing PROFESSOR');
-        console.log(foundProfs);
+        var foundProfs = tmp.getElementsByClassName(className);
+        //console.log("foundProfs:");
+        //console.log(foundProfs);
         //console.log(length);
 
-        /*
-         // Code that I was testing that I don't want to delete just yet
-
-         $.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent('http://google.com') + '&callback=?', function(data){
-         alert(data.contents);
-         });
-
-         var html = $(".listing.PROFESSOR").load(searchURL); // Returns html object of prof search page
-         var length = html.length;
-         console.log(html);
-         console.log(length);
-        */
-
         if (foundProfs.length = 1) {
-            var links     = tmp.getElementsByTagName("a");
-            console.log(links);
-            for (var l = 0; l < links.length; l++){
-                if (links[l].href == "/ShowRatings.jsp?tid=*") {
-                    console.log(links[l]);
-                }
-            }
-            //var profURL = 'http://www.ratemyprofessors.com/' + link[0].toString().slice(23); //this is the URL
+            var link     = tmp.getElementsByTagName("a");
+            //console.log("link: ");
             //console.log(link);
-            //return profURL;
-        }
-        else { // If no results or more than one prof are found
+            var profURL = 'http://www.ratemyprofessors.com/' + link[52].toString().slice(42); //this is the URL
+            //console.log(link);
+            console.log("profURL: " + profURL);
+            return profURL;
+        } else { // If no results or more than one prof are found
             return searchURL;
         }
-
-        return "";
-        //var foundProfs = document.getElementsByClassName('listing PROFESSOR');
-        //console.log(foundProfs);
-
     });
 }
-
 
 getProfessorNames('default1');
 getProfessorNames('default2');
 console.log("Script done");
+
+
+
+
+
+
+
+/*
+ // Code that I was testing that I don't want to delete just yet
+
+ $.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent('http://google.com') + '&callback=?', function(data){
+ alert(data.contents);
+ });
+
+ var html = $(".listing.PROFESSOR").load(searchURL); // Returns html object of prof search page
+ var length = html.length;
+ console.log(html);
+ console.log(length);
+ */

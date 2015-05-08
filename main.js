@@ -680,8 +680,7 @@
 
  */
 var schoolName = "sierra + college";
-var profArrayGlobal = [];
-var cellArrayGlobal = [];
+// Not using this these right now
 
 // Gets profNameArray names and returns string array. className is the class name of the class that the names are in
 function getProfessorNames(className) {
@@ -695,43 +694,31 @@ function getProfessorNames(className) {
 
         // Finds which class cell actually has professor names
         if (profTempArray.length === 2) {
-            // Now that we know where the names are we can save that data in global arrays
-            cellArrayGlobal.push(cellArray[i]);
             profNameArray[i] = profTempArray[0] + " " + profTempArray[1];
-            profArrayGlobal.push(profNameArray[i]);
 
-            // Tries to get actual teacher URLS
-            var url = returnProfUrl(profNameArray[i], i); // TODO: This works, just doesn't return here, it executes after getProfessorNames('default1'); and getProfessorNames('default2');. I think this is because of chrome.runtime.sendMessage({
-            console.log("url: " + url);
+            //Puts placeholder link to search page
+            var url= returnSearchUrl(profNameArray[i]);
 
-            if (url == undefined) {
-                url = returnSearchUrl(profNameArray[i]);
-            }
-
+            // Creates placeholder hyperlink
             $(cellArray[i]).text('');
             $('<a href="'+ url +'">'+profNameArray[i]+'</a>').appendTo($(cellArray[i]));
+
+            // Dynamically loads actual teacher page hyperlink on mouseover
+            hover(cellArray[i], profNameArray[i]);
+
         }
     }
 }
 
-// jQuery animation popup
-// TODO
-function popup(cell, profNameArray) {
-    /*
-    // Leaving this stuff here for possible later use
-     $(cell).click(function() {
-     searchNewTab(profNameArray);
-     });
-
-
+// jQuery hover function
+function hover(cell, profName) {
      $(cell).hover(function(){
-     //$(this).filter(':not(:animated)').animate({ width: "200px" });
-     console.log("mouse on");
+
+     // Gets actual teacher URLS and applies them to page
+    returnProfUrl(cell, profName); // TODO: make it so that it does not load multiple times on each mousover
      }, function() {
-     //$(this).animate({ width: "100px" });
-     console.log("mouse off");
      });
-     */
+
 }
 
 // Misc functions
@@ -740,33 +727,28 @@ function returnSearchUrl(profNameWithSpace) {
         "&queryoption=HEADER&query=" + encodeURI(profNameWithSpace) + "&facetSearch=true";
 }
 
-// Gets teachers actual URL, if more than one option or no result - returns search page URL
-function returnProfUrl(profNameWithSpace, i) {
+// Gets teachers actual URL, if more than one option or no result - applies url to hyperlink
+function returnProfUrl(cell, profNameWithSpace) {
     var className = 'listing PROFESSOR';
     var searchURL = returnSearchUrl(profNameWithSpace);
 
     chrome.runtime.sendMessage({                          //need a separate event page to do the xmlhttprequest because of http to https issue
         url: searchURL
     }, function (responseText) {
-
         var tmp        = document.createElement('div');  //make a temp element so that we can search through its html
         tmp.innerHTML  = responseText;
         var foundProfs = tmp.getElementsByClassName(className);
-        //console.log("foundProfs:");
-        //console.log(foundProfs);
-        //console.log(length);
 
+        // If only 1 teacher found
         if (foundProfs.length = 1) {
             var link     = tmp.getElementsByTagName("a");
-            //console.log("link: ");
-            //console.log(link);
             var profURL = 'http://www.ratemyprofessors.com/' + link[52].toString().slice(42); //this is the URL
-            //console.log(link);
             console.log("profURL: " + profURL);
-            return profURL;
         } else { // If no results or more than one prof are found
-            return searchURL;
+            profURL = searchURL;
         }
+        // Applies to hyperlink
+        cell.innerHTML = '<a href="'+ profURL + '" target="_blank">'+ profNameWithSpace + '</a>';
     });
 }
 

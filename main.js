@@ -723,6 +723,7 @@ function hover(cell, profNameWithSpace, url) {
     });
 }
 
+
 // Misc functions
 function returnSearchUrl(profNameWithSpace) {
     return "http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=" + schoolName +

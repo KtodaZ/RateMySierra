@@ -697,24 +697,29 @@ function getProfessorNames(className) {
             profNameArray[i] = profTempArray[0] + " " + profTempArray[1];
 
             //Puts placeholder link to search page
-            var url= returnSearchUrl(profNameArray[i]);
+            var url= '<a href="'+ returnSearchUrl(profNameArray[i]) + '" target="_blank">'+ profNameArray[i] + '</a>';
 
             // Creates placeholder hyperlink
             $(cellArray[i]).text('');
-            $('<a href="'+ url +'">'+profNameArray[i]+'</a>').appendTo($(cellArray[i]));
+            cellArray[i].innerHTML = url;
 
-            // Dynamically loads actual teacher page hyperlink on mouseover
-            hover(cellArray[i], profNameArray[i]);
+            // Dynamically loads actual teacher page hyperlink on mouseover.
+            //console.log(cellArray[i].innerHTML);
+
+            hover(cellArray[i], profNameArray[i], url);
 
         }
     }
 }
 
 // jQuery hover function
-function hover(cell, profName) {
+function hover(cell, profNameWithSpace, url) {
     $(cell).mouseenter(function() {
-        // Gets actual teacher URLS and applies them to page
-        returnProfUrl(cell, profName); // TODO: make it so that it does not load multiple times on each mousover
+        // Checks if hyperlink is directed to search page
+        if (cell.innerHTML.indexOf('<a href="http://www.ratemyprofessors.com/search') === 0) {
+            // Gets actual teacher URLS and applies them to page
+            returnProfUrl(cell, profNameWithSpace);
+        }
     });
 }
 
@@ -738,7 +743,7 @@ function returnProfUrl(cell, profNameWithSpace) {
 
         // If only 1 teacher found
         if (foundProfs.length = 1) {
-            var link     = tmp.getElementsByTagName("a");
+            var link     = tmp.getElementsByTagName("a"); // Only found o
             var profURL = 'http://www.ratemyprofessors.com/' + link[52].toString().slice(42); //this is the URL
             console.log("profURL: " + profURL);
         } else { // If no results or more than one prof are found

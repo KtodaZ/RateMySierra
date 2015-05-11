@@ -680,79 +680,82 @@
 
  */
 var schoolName = "sierra + college";
-// Not using this these right now
 
-// Gets profNameArray names and returns string array. className is the class name of the class that the names are in
+// Gets professor names and returns string array. className is the class name of the class that the names are in
 function getProfessorNames(className) {
-    var cellArray      = document.getElementsByClassName(className);
-    var profNameArray = [];
+    var cellArray     = document.getElementsByClassName(className);
     var profTempArray = [];
 
     for(var i =0; i < cellArray.length; i++) {
-        // Gets text from object array and splits into name strings by each space
+        // Gets text from object array and splits into temp strings
         profTempArray = $(cellArray[i]).text().trim().split(/[ ]+/);
 
-        // Finds which class cell actually has professor names
-        if (profTempArray.length === 2) {
-            profNameArray[i] = profTempArray[0] + " " + profTempArray[1];
+        /*  Sorts out teachers names from other information.
+         *  First checks if the name consists of two words,
+         *  then checks if the first letter of the first and
+         *  last name are capitalized using regex
+         */
+        if (profTempArray.length === 2 && /[A-Z]/.test(profTempArray[0]) && /[A-Z]/.test(profTempArray[1])) {
+            var profName = profTempArray[0] + " " + profTempArray[1];
 
-            //Puts placeholder link to search page
-            var url= '<a href="'+ returnSearchUrl(profNameArray[i]) + '" target="_blank">'+ profNameArray[i] + '</a>';
-
-            // Creates placeholder hyperlink
+            // Creates placeholder hyperlink for if user clicks before returnProfUrl finishes running
+            var url= '<a href="'+ returnSchoolSearchUrl(profName) + '" target="_blank">'+ profName + '</a>';
             $(cellArray[i]).text('');
             cellArray[i].innerHTML = url;
 
-            // Dynamically loads actual teacher page hyperlink on mouseover.
-            //console.log(cellArray[i].innerHTML);
-
-            hover(cellArray[i], profNameArray[i], url);
-
+            // Uses hover function to dynamically load direct prof page
+            hover(cellArray[i], profName, url);
         }
     }
 }
 
-// jQuery hover function
+// Dynamically calls returnProfUrl on mouse over
 function hover(cell, profNameWithSpace, url) {
     $(cell).mouseenter(function() {
-        // Checks if hyperlink is directed to search page
+        // Checks hyperlink so returnProfUrl only loads once
         if (cell.innerHTML.indexOf('<a href="http://www.ratemyprofessors.com/search') === 0) {
-            // Gets actual teacher URLS and applies them to page
             returnProfUrl(cell, profNameWithSpace);
         }
     });
 }
 
+// Finds actual teacher URL. Returns search page for no professors
+function returnProfUrl(cell, profNameWithSpace) {
+    var searchURL = returnSchoolSearchUrl(profNameWithSpace);
 
-// Misc functions
-function returnSearchUrl(profNameWithSpace) {
+    // Uses XMLHttpRequest in eventPage.js to load content from RMP
+    // Note that I have no idea how this works... :)
+    chrome.runtime.sendMessage({
+        url: searchURL
+    }, function (responseText) {
+        // Creates temp element to make changes to
+        var tmp        = document.createElement('div');
+        tmp.innerHTML  = responseText;
+
+        // Finds location of url on page
+        var link     = tmp.getElementsByTagName("a");
+        var profURL = 'http://www.ratemyprofessors.com/' + link[52].toString().slice(42);
+        console.log("profURL: " + profURL);
+
+        // Searches all schools if no prof found
+        if (profURL == 'http://www.ratemyprofessors.com/About.jsp') {
+            profURL = returnNormalSearchUrl(profNameWithSpace);
+        }
+
+        // Applies new hyperlink to page
+        cell.innerHTML = '<a href="'+ profURL + '" target="_blank">'+ profNameWithSpace + '</a>';
+    });
+}
+
+// Returns search url for specific school
+function returnSchoolSearchUrl(profNameWithSpace) {
     return "http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=" + schoolName +
         "&queryoption=HEADER&query=" + encodeURI(profNameWithSpace) + "&facetSearch=true";
 }
 
-// Gets teachers actual URL, if more than one option or no result - applies url to hyperlink
-function returnProfUrl(cell, profNameWithSpace) {
-    var className = 'listing PROFESSOR';
-    var searchURL = returnSearchUrl(profNameWithSpace);
-
-    chrome.runtime.sendMessage({                          //need a separate event page to do the xmlhttprequest because of http to https issue
-        url: searchURL
-    }, function (responseText) {
-        var tmp        = document.createElement('div');  //make a temp element so that we can search through its html
-        tmp.innerHTML  = responseText;
-        var foundProfs = tmp.getElementsByClassName(className);
-
-        // If only 1 teacher found
-        if (foundProfs.length = 1) {
-            var link     = tmp.getElementsByTagName("a"); // Only found o
-            var profURL = 'http://www.ratemyprofessors.com/' + link[52].toString().slice(42); //this is the URL
-            console.log("profURL: " + profURL);
-        } else { // If no results or more than one prof are found
-            profURL = searchURL;
-        }
-        // Applies to hyperlink
-        cell.innerHTML = '<a href="'+ profURL + '" target="_blank">'+ profNameWithSpace + '</a>';
-    });
+// Returns search url for all schools
+function returnNormalSearchUrl(profNameWithSpace) {
+    return "http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&query=" + encodeURI(profNameWithSpace);
 }
 
 getProfessorNames('default1');

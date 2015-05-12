@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "RateMySierra",
-  "description": "Links rate my professor to Sierra College's MySierra website",
+  "description": "Links Rate My professor to Sierra College's MySierra website",
   "version": "1.0",
 
   "author": "Kyle Szombathy",

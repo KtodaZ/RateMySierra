@@ -1,3 +1,4 @@
+
 /*<Content Script for main processes of extension>
  Copyright (C) <2015>  <Kyle Szombathy, William Hexberg>
 

@@ -23,6 +23,7 @@ function showPageAction( tabId, changeInfo, tab ) {
         chrome.pageAction.show(tabId);
     }
 }
+
 /*
 // OmniBox search implementation
 function resetDefaultSuggestion() {

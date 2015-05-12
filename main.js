@@ -35,22 +35,25 @@ function getProfessorNames(className) {
             var profName = profTempArray[0] + " " + profTempArray[1];
 
             // Creates placeholder hyperlink for if user clicks before returnProfUrl finishes running
-            var url= '<a href="'+ returnNormalSearchUrl(profName) + '" target="_blank">'+ profName + '</a>';
             $(cellArray[i]).text('');
-            cellArray[i].innerHTML = url;
+            cellArray[i].innerHTML = '<a href="'+ returnNormalSearchUrl(profName) + '" target="_blank">'+ profName + '</a>';
+
 
             // Uses hover function to dynamically load direct prof page
-            hover(cellArray[i], profName, url);
+            hover(cellArray[i], profName);
         }
     }
 }
 
 // Dynamically calls returnProfUrl on mouse over
-function hover(cell, profNameWithSpace, url) {
+function hover(cell, profNameWithSpace) {
+    var hasBeenSearched = false;
+
     $(cell).mouseenter(function() {
         // Checks hyperlink so returnProfUrl only loads once
-        if (cell.innerHTML.indexOf('<a href="http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&amp;schoolName=') === 0) {
+        if (!hasBeenSearched) {
             returnProfUrl(cell, profNameWithSpace);
+            hasBeenSearched = true;
         }
     });
 }

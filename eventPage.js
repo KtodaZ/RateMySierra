@@ -17,12 +17,15 @@
 
 var schoolName = "sierra + college";
 
-//displays icon in address bar when script is active
+// Displays icon in address bar when script is active
+// Doesn't work
 function showPageAction( tabId, changeInfo, tab ) {
     if(tab.url == "https://banprodssb.sierracollege.edu:8810/PROD/pw_sigsched.p_process"){
         chrome.pageAction.show(tabId);
     }
 }
+
+chrome.tabs.onUpdated.addListener(showPageAction);
 
 /*
 // OmniBox search implementation

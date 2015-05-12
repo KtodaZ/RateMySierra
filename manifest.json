@@ -6,11 +6,7 @@
 
   "author": "Kyle Szombathy",
   "author": "William Hexberg",
-/*
-  "omnibox": {
-    "keyword": "SRMP"
-  },
-*/
+
   "icons": {
     "128": "icon.png"
   },
@@ -26,14 +22,13 @@
 
   "permissions": [
     "tabs",
-    //"contextMenus",
-    "http://www.ratemyprofessors.com/" // May not be needed
+    "http://www.ratemyprofessors.com/"
   ],
 
   "content_scripts": [
     {
-      "matches": ["https://banprodssb.sierracollege.edu:8810/PROD/pw_sigsched.p_process"], //So scripts only runs on Sierra website
-      "js": ["jquery-2.1.3.js", "main.js"]
+      "matches": ["https://banprodssb.sierracollege.edu:8810/PROD/pw_sigsched.p_process"],
+      "js": ["jquery-1.11.3.min.js", "main.js"]
     }
   ]
 }

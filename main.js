@@ -20,10 +20,10 @@ var schoolName = "sierra + college";
 // Gets professor names and returns string array. className is the class name of the class that the names are in
 function getProfessorNames(className) {
     var cellArray     = document.getElementsByClassName(className);
-    var profTempArray = [];
 
     for(var i =0; i < cellArray.length; i++) {
         // Gets text from object array and splits into temp strings
+        var profTempArray = [];
         profTempArray = $(cellArray[i]).text().trim().split(/[ ]+/);
 
         /*  Sorts out teachers names from other information.
@@ -35,27 +35,52 @@ function getProfessorNames(className) {
             var profName = profTempArray[0] + " " + profTempArray[1];
 
             // Creates placeholder hyperlink for if user clicks before returnProfUrl finishes running
-            $(cellArray[i]).text('');
-            cellArray[i].innerHTML = '<a href="'+ returnNormalSearchUrl(profName) + '" target="_blank">'+ profName + '</a>';
+            var url = '<a href="'+ returnNormalSearchUrl(profName) + '" target="_blank" title="RMP Search page">'+ profName + '</a>';
+            //var url = '<a href="#" target="_blank" title="Test widget">'+ profName + '</a>';
+            //var url = '<a href="#" title="Test widget">Tooltips</a>';
 
+            $(cellArray[i]).text('');
+            cellArray[i].innerHTML = url;
+
+            //cellArray[i].innerHTML ='<input type="text" id="elementID" title="This is a sample tooltip.">';
+            //console.log(cellArray[i]);
 
             // Uses hover function to dynamically load direct prof page
+            tooltip(cellArray[i],url);
             hover(cellArray[i], profName);
         }
+        //$(cellArray[i]).parents('div').remove();
+
     }
+}
+
+// Creates tooltip
+function tooltip(cell,url) {
+    $(document).ready(function () {
+        $(cell).tooltip({
+            tooltipClass: "tool-tip",
+            content:". . . loading . . .",
+            hide: { effect: "fade", duration: 200 }
+        })
+    });
 }
 
 // Dynamically calls returnProfUrl on mouse over
 function hover(cell, profNameWithSpace) {
     var hasBeenSearched = false;
 
+
     $(cell).mouseenter(function() {
+        // Removes all other tooltips remaining in window
+        $('.ui-tooltip.ui-widget.ui-corner-all.ui-widget-content').remove();
+
         // Checks hyperlink so returnProfUrl only loads once
         if (!hasBeenSearched) {
             returnProfUrl(cell, profNameWithSpace);
             hasBeenSearched = true;
         }
     });
+    //$("body *").removeClass("tool-tip");
 }
 
 // Finds actual teacher URL. Returns search page for no professors
@@ -63,7 +88,6 @@ function returnProfUrl(cell, profNameWithSpace) {
     var searchURL = returnSchoolSearchUrl(profNameWithSpace);
 
     // Uses XMLHttpRequest in eventPage.js to load content from RMP
-    // Note that I have no idea how this works... :)
     chrome.runtime.sendMessage({
         url: searchURL
     }, function (responseText) {
@@ -74,15 +98,18 @@ function returnProfUrl(cell, profNameWithSpace) {
         // Finds location of url on page
         var link     = tmp.getElementsByTagName("a");
         var profURL = 'http://www.ratemyprofessors.com/' + link[52].toString().slice(42);
-        console.log("profURL: " + profURL);
+
 
         // Searches all schools if no prof found
         if (profURL == 'http://www.ratemyprofessors.com/About.jsp') {
             profURL = returnNormalSearchUrl(profNameWithSpace);
+            $(cell).tooltip("option", "content", "No professors found, click to search all schools.");
+        }else {
+            $(cell).tooltip("option", "content", "Professor Found!");
         }
 
         // Applies new hyperlink to page
-        cell.innerHTML = '<a href="'+ profURL + '" target="_blank">'+ profNameWithSpace + '</a>';
+        cell.innerHTML = '<a href="'+ profURL + '" target="_blank" title="RMP Professor page">'+ profNameWithSpace + '</a>';
     });
 }
 
@@ -97,6 +124,9 @@ function returnNormalSearchUrl(profNameWithSpace) {
     return "http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&query=" + encodeURI(profNameWithSpace);
 }
 
+
 getProfessorNames('default1');
 getProfessorNames('default2');
+
+
 console.log("Script done");

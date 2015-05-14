@@ -17,6 +17,17 @@
  */
 var schoolName = "sierra + college";
 
+// Google Analytics
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-40544502-2']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = 'https://ssl.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+
 // Gets professor names and returns string array. className is the class name of the class that the names are in
 function getProfessorNames(className) {
     var cellArray     = document.getElementsByClassName(className);
@@ -36,21 +47,13 @@ function getProfessorNames(className) {
 
             // Creates placeholder hyperlink for if user clicks before returnProfUrl finishes running
             var url = '<a href="'+ returnNormalSearchUrl(profName) + '" target="_blank" title="RMP Search page">'+ profName + '</a>';
-            //var url = '<a href="#" target="_blank" title="Test widget">'+ profName + '</a>';
-            //var url = '<a href="#" title="Test widget">Tooltips</a>';
-
             $(cellArray[i]).text('');
             cellArray[i].innerHTML = url;
-
-            //cellArray[i].innerHTML ='<input type="text" id="elementID" title="This is a sample tooltip.">';
-            //console.log(cellArray[i]);
 
             // Uses hover function to dynamically load direct prof page
             tooltip(cellArray[i],url);
             hover(cellArray[i], profName);
         }
-        //$(cellArray[i]).parents('div').remove();
-
     }
 }
 
@@ -67,20 +70,18 @@ function tooltip(cell,url) {
 
 // Dynamically calls returnProfUrl on mouse over
 function hover(cell, profNameWithSpace) {
-    var hasBeenSearched = false;
-
+    var haveProfUrl = false;
 
     $(cell).mouseenter(function() {
-        // Removes all other tooltips remaining in window
+        // For removing tooltips that remain on the page(necessary)
         $('.ui-tooltip.ui-widget.ui-corner-all.ui-widget-content').remove();
 
         // Checks hyperlink so returnProfUrl only loads once
-        if (!hasBeenSearched) {
+        if (!haveProfUrl) {
             returnProfUrl(cell, profNameWithSpace);
-            hasBeenSearched = true;
+            haveProfUrl = true;
         }
     });
-    //$("body *").removeClass("tool-tip");
 }
 
 // Finds actual teacher URL. Returns search page for no professors
@@ -88,6 +89,7 @@ function returnProfUrl(cell, profNameWithSpace) {
     var searchURL = returnSchoolSearchUrl(profNameWithSpace);
 
     // Uses XMLHttpRequest in eventPage.js to load content from RMP
+    // TODO: Find way to do this so that page is still secure
     chrome.runtime.sendMessage({
         url: searchURL
     }, function (responseText) {
@@ -96,9 +98,9 @@ function returnProfUrl(cell, profNameWithSpace) {
         tmp.innerHTML  = responseText;
 
         // Finds location of url on page
+        // TODO: Find more permanent way to do this, incase RMP changes their page
         var link     = tmp.getElementsByTagName("a");
         var profURL = 'http://www.ratemyprofessors.com/' + link[52].toString().slice(42);
-
 
         // Searches all schools if no prof found
         if (profURL == 'http://www.ratemyprofessors.com/About.jsp') {
@@ -123,6 +125,7 @@ function returnSchoolSearchUrl(profNameWithSpace) {
 function returnNormalSearchUrl(profNameWithSpace) {
     return "http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&query=" + encodeURI(profNameWithSpace);
 }
+
 
 
 getProfessorNames('default1');

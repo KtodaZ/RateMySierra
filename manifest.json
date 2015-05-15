@@ -24,8 +24,14 @@
 
   "permissions": [
     "tabs",
-    "http://www.ratemyprofessors.com/"
+    "http://www.ratemyprofessors.com/",
+    "storage"
   ],
+
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
+  },
 
   "content_scripts": [
     {

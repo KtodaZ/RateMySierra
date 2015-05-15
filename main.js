@@ -111,33 +111,8 @@ function returnProfUrl(cell, profNameWithSpace) {
             LOOKING AT THIS http://qtip2.com/guides
             TRYING TO FIGURE OUT IF I NEED TO USE THE XMLHTTPREQUEST BELOW OR IF I CAN USE AJAX I THINK IT'S THE FORMER
             */
-            // MAKE SURE YOUR SELECTOR MATCHES SOMETHING IN YOUR HTML!!!
-            $(cell).each(function() {
-                $(this).qtip({
-                    content: {
-                        text: function(event, api) {
-                            $.ajax({
-                                url: api.elements.target.attr('href=' + profURL)
-                            })
-                                .then(function(content) {
-                                    // Set the tooltip content upon successful retrieval
-                                    api.set('content.text', content);
-                                }, function(xhr, status, error) {
-                                    // Upon failure... set the tooltip content to error
-                                    api.set('content.text', status + ': ' + error);
-                                });
+            console.log('href=\'' + profURL + '\'');
 
-                            return 'Loading...'; // Set some initial text
-                        }
-                    },
-                    position: {
-                        viewport: $(window)
-                    },
-                    style: 'qtip-wiki'
-                });
-            });
-
-            /*
             // xmlHttpRequest for professor page
             chrome.runtime.sendMessage({
                 url: this.profURL
@@ -153,18 +128,16 @@ function returnProfUrl(cell, profNameWithSpace) {
                 var iframeWidth = '600';
                 var iframeHeight = '500';
 
-                $('tr a').each(function() {
-                    $(cell).qtip({
-                        content: {
-                            text: '<iframe src="' + $(cell).attr('href') + '"' + 'width=' + iframeWidth + '"' + 'height=' + '"' + iframeHeight + '" scrolling="no" frameborder="0"><p>Your browser does not support iframes.</p> </iframe>',
-                            title: {
-                                text: 'Preview'
-                            }
+                $(cell).qtip({
+                    content: {
+                        text: '<iframe src="' + $(cell).attr('href=\'' + profURL + '\'') + '"' + 'width=' + iframeWidth + '"' + 'height=' + '"' + iframeHeight + '" scrolling="no" frameborder="0"><p>Your browser does not support iframes.</p> </iframe>',
+                        title: {
+                            text: 'Preview'
                         }
-                    });
+                    }
                 });
+
             });
-            */
         } else { // If no prof is found
             profURL = returnNormalSearchUrl(profNameWithSpace);
             $(cell).tooltip("option", "content", "No professors found, click to search all schools.");

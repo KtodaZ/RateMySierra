@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "RateMySierra",
   "description": "Links Rate My professor to Sierra College's MySierra website",
-  "version": "1.0.2.1",
+  "version": "1.0.3.1",
 
   "author": "Kyle Szombathy",
   "author": "William Hexberg",
@@ -30,8 +30,8 @@
   "content_scripts": [
     {
       "matches": ["https://banprodssb.sierracollege.edu:8810/PROD/pw_sigsched.p_process"],
-      "css": ["jquery-ui.min.css"],
-      "js": ["jquery-1.11.3.min.js", "jquery-ui.min.js", "main.js"]
+      "css": ["jquery-ui.min.css", "jquery.qtip.css"],
+      "js": ["jquery-1.11.3.min.js", "jquery-ui.min.js", "jquery.qtip.js", "main.js"]
     }
   ]
 }

@@ -16,7 +16,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 var schoolName = "sierra + college";
-
+/*
 // Google Analytics
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-40544502-2']);
@@ -27,7 +27,7 @@ _gaq.push(['_trackPageview']);
     ga.src = 'https://ssl.google-analytics.com/ga.js';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 })();
-
+*/
 // Gets professor names and returns string array. className is the class name of the class that the names are in
 function getProfessorNames(className) {
     var cellArray     = document.getElementsByClassName(className);
@@ -51,17 +51,16 @@ function getProfessorNames(className) {
             cellArray[i].innerHTML = url;
 
             // Uses hover function to dynamically load direct prof page
-            tooltip(cellArray[i],url);
+            tooltip(cellArray[i]);
             hover(cellArray[i], profName);
         }
     }
 }
 
 // Creates tooltip
-function tooltip(cell,url) {
+function tooltip(cell) {
     $(document).ready(function () {
         $(cell).tooltip({
-            tooltipClass: "tool-tip",
             content:". . . loading . . .",
             hide: { effect: "fade", duration: 200 }
         })
@@ -93,7 +92,7 @@ function returnProfUrl(cell, profNameWithSpace) {
     chrome.runtime.sendMessage({
         url: searchURL
     }, function (responseText) {
-        // Creates temp element to make changes to
+        // Sets searchURL html to tmp element
         var tmp        = document.createElement('div');
         tmp.innerHTML  = responseText;
 
@@ -102,12 +101,73 @@ function returnProfUrl(cell, profNameWithSpace) {
         var link     = tmp.getElementsByTagName("a");
         var profURL = 'http://www.ratemyprofessors.com/' + link[52].toString().slice(42);
 
-        // Searches all schools if no prof found
-        if (profURL == 'http://www.ratemyprofessors.com/About.jsp') {
+        // If prof is found, get html from teacher page and apply to tooltip
+        if (profURL != 'http://www.ratemyprofessors.com/About.jsp') {
+            // Set tooltip
+            $(cell).tooltip("option", "content", "Professor Found!");
+            /*
+            THERE BE DRAGONS
+            THIS NO WORK
+            LOOKING AT THIS http://qtip2.com/guides
+            TRYING TO FIGURE OUT IF I NEED TO USE THE XMLHTTPREQUEST BELOW OR IF I CAN USE AJAX I THINK IT'S THE FORMER
+            */
+            // MAKE SURE YOUR SELECTOR MATCHES SOMETHING IN YOUR HTML!!!
+            $(cell).each(function() {
+                $(this).qtip({
+                    content: {
+                        text: function(event, api) {
+                            $.ajax({
+                                url: api.elements.target.attr('href=' + profURL)
+                            })
+                                .then(function(content) {
+                                    // Set the tooltip content upon successful retrieval
+                                    api.set('content.text', content);
+                                }, function(xhr, status, error) {
+                                    // Upon failure... set the tooltip content to error
+                                    api.set('content.text', status + ': ' + error);
+                                });
+
+                            return 'Loading...'; // Set some initial text
+                        }
+                    },
+                    position: {
+                        viewport: $(window)
+                    },
+                    style: 'qtip-wiki'
+                });
+            });
+
+            /*
+            // xmlHttpRequest for professor page
+            chrome.runtime.sendMessage({
+                url: this.profURL
+            }, function (responseText) {
+                // Same thing as before, Sets profURL html to tmp element
+                var tmp = document.createElement('div');
+                tmp.innerHTML = responseText;
+
+                // Finds html we want to display
+                var profGraphic = tmp.getElementsByClassName("ui-slider-range");
+                console.log(profGraphic);
+
+                var iframeWidth = '600';
+                var iframeHeight = '500';
+
+                $('tr a').each(function() {
+                    $(cell).qtip({
+                        content: {
+                            text: '<iframe src="' + $(cell).attr('href') + '"' + 'width=' + iframeWidth + '"' + 'height=' + '"' + iframeHeight + '" scrolling="no" frameborder="0"><p>Your browser does not support iframes.</p> </iframe>',
+                            title: {
+                                text: 'Preview'
+                            }
+                        }
+                    });
+                });
+            });
+            */
+        } else { // If no prof is found
             profURL = returnNormalSearchUrl(profNameWithSpace);
             $(cell).tooltip("option", "content", "No professors found, click to search all schools.");
-        }else {
-            $(cell).tooltip("option", "content", "Professor Found!");
         }
 
         // Applies new hyperlink to page

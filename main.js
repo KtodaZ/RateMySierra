@@ -98,8 +98,14 @@ function returnProfUrl(cell, profNameWithSpace) {
 
         // Finds location of url on page
         // TODO: Find more permanent way to do this, incase RMP changes their page
-        var link     = tmp.getElementsByTagName("a");
-        var profURL = 'http://www.ratemyprofessors.com/' + link[52].toString().slice(42);
+        var link       = tmp.getElementsByTagName("a");
+        var linkString = link[52].toString();
+
+		for(var i = 0; i < linkString.length; i++) {
+		    if(linkString.substring(i, i+11) === "ShowRatings") {
+		        var profURL = 'http://www.ratemyprofessors.com/' + linkString.slice(i);
+		    }
+		}
 
         // If prof is found, get html from teacher page and apply to tooltip
         if (profURL != 'http://www.ratemyprofessors.com/About.jsp') {

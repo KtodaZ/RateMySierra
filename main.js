@@ -133,15 +133,18 @@ function returnProfUrl(cell, profNameWithSpace) {
 
                 var iframeWidth = '600';
                 var iframeHeight = '500';
-
+                var iframe = $('<iframe />').attr({
+                	src: profURL,
+                	alt: "Cannot Load",
+                	height: iframeHeight,
+                	width: iframeWidth,
+                })
                 $(cell).qtip({
-                    content: {
-                        text: '<iframe src="' + $(cell).attr('href=\'' + profURL + '\'') + '"' + 'width=' + iframeWidth + '"' + 'height=' + '"' + iframeHeight + '" scrolling="no" frameborder="0"><p>Your browser does not support iframes.</p> </iframe>',
-                        title: {
-                            text: 'Preview'
-                        }
-                    }
-                });
+		            content: iframe,
+		            position: {
+				    	viewport: $(window)
+				    }
+		        });
 
             });
         } else { // If no prof is found

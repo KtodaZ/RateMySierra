@@ -83,3 +83,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
     xhr.send();
     return true; // prevents the callback from being called too early on return
 });
+
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+    for (key in changes) {
+        var storageChange = changes[key];
+        console.log('Storage key "%s" in namespace "%s" changed. ' +
+            'Old value was "%s", new value is "%s".',
+            key,
+            namespace,
+            storageChange.oldValue,
+            storageChange.newValue);
+    }
+});

@@ -1,4 +1,3 @@
-
 /*<Content Script for main processes of extension>
  Copyright (C) <2015>  <Kyle Szombathy, William Hexberg>
 
@@ -101,7 +100,6 @@ function setProfessorURL(cell, profNameWithSpace) {
 		for(var i = 0; i < linkString.length; i++)
 		    if(linkString.substring(i, i+11) === "ShowRatings")
 		        var profURL = 'http://www.ratemyprofessors.com/' + linkString.slice(i);
-
 
         // If a professor is found
         if (profURL != 'http://www.ratemyprofessors.com/About.jsp') {

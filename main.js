@@ -155,8 +155,8 @@ function returnNormalSearchUrl(profNameWithSpace) {
 
 
 chrome.storage.sync.get("schoolName", function(obj) {
-        getProfessorNames('default1', obj.schoolName);
-        getProfessorNames('default2', obj.schoolName);
+        main('default1', obj.schoolName);
+        main('default2', obj.schoolName);
     }
 );
 

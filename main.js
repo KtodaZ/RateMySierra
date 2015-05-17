@@ -106,6 +106,7 @@ function setProfessorURL(cell, profNameWithSpace) {
             // Set tooltip
             $(cell).tooltip("option", "content", "Professor Found!");
 
+            /*
             // xmlHttpRequest for professor page
             chrome.runtime.sendMessage({
                 url: this.profURL
@@ -133,6 +134,7 @@ function setProfessorURL(cell, profNameWithSpace) {
 				    }
 		        });
             });
+            */
         }
         // If no prof is found
         else {

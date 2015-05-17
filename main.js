@@ -1,3 +1,4 @@
+
 /*<Content Script for main processes of extension>
  Copyright (C) <2015>  <Kyle Szombathy, William Hexberg>
 
@@ -14,42 +15,44 @@
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+//var schoolName = "sierra + college";
 /*
-// Google Analytics
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-40544502-2']);
-_gaq.push(['_trackPageview']);
+ // Google Analytics
+ var _gaq = _gaq || [];
+ _gaq.push(['_setAccount', 'UA-40544502-2']);
+ _gaq.push(['_trackPageview']);
 
-(function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = 'https://ssl.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();
-*/
-
-
-var schoolName = "sierra + college";
-
-function main(className) {
+ (function() {
+ var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ ga.src = 'https://ssl.google-analytics.com/ga.js';
+ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+ })();
+ */
+// Gets professor names and returns string array. className is the class name of the class that the names are in
+function getProfessorNames(className,schoolName) {
     var cellArray     = document.getElementsByClassName(className);
 
     for(var i =0; i < cellArray.length; i++) {
         // Gets text from object array and splits into temp strings
         var profTempArray = [];
         profTempArray = $(cellArray[i]).text().trim().split(/[ ]+/);
-        
-         // Sorts out teacher names
+
+        /*  Sorts out teachers names from other information.
+         *  First checks if the name consists of two words,
+         *  then checks if the first letter of the first and
+         *  last name are capitalized using regex
+         */
         if (profTempArray.length === 2 && /[A-Z]/.test(profTempArray[0]) && /[A-Z]/.test(profTempArray[1])) {
             var profName = profTempArray[0] + " " + profTempArray[1];
 
-            // Creates placeholder hyperlinks
+            // Creates placeholder hyperlink for if user clicks before returnProfUrl finishes running
             var url = '<a href="'+ returnNormalSearchUrl(profName) + '" target="_blank" title="RMP Search page">'+ profName + '</a>';
             $(cellArray[i]).text('');
             cellArray[i].innerHTML = url;
 
-            // Call for tooltips and dynamic content load
+            // Uses hover function to dynamically load direct prof page
             tooltip(cellArray[i]);
-            hover(cellArray[i], profName);
+            hover(cellArray[i], profName, schoolName);
         }
     }
 }
@@ -64,25 +67,25 @@ function tooltip(cell) {
     });
 }
 
-// Dynamically calls setProfessorURL on mouse over
-function hover(cell, profNameWithSpace) {
+// Dynamically calls returnProfUrl on mouse over
+function hover(cell, profNameWithSpace, schoolName) {
     var haveProfUrl = false;
 
     $(cell).mouseenter(function() {
         // For removing tooltips that remain on the page(necessary)
         $('.ui-tooltip.ui-widget.ui-corner-all.ui-widget-content').remove();
 
-        // Checks hyperlink so setProfessorURL only loads once
+        // Checks hyperlink so returnProfUrl only loads once
         if (!haveProfUrl) {
-            setProfessorURL(cell, profNameWithSpace);
+            returnProfUrl(cell, profNameWithSpace, schoolName);
             haveProfUrl = true;
         }
     });
 }
 
 // Finds actual teacher URL. Returns search page for no professors
-function setProfessorURL(cell, profNameWithSpace) {
-    var searchURL = returnSchoolSearchUrl(profNameWithSpace);
+function returnProfUrl(cell, profNameWithSpace, schoolName) {
+    var searchURL = returnSchoolSearchUrl(profNameWithSpace, schoolName);
 
     // Uses XMLHttpRequest in eventPage.js to load content from RMP
     // TODO: Find way to do this so that page is still secure
@@ -94,17 +97,27 @@ function setProfessorURL(cell, profNameWithSpace) {
         tmp.innerHTML  = responseText;
 
         // Finds location of url on page
+        // TODO: Find more permanent way to do this, incase RMP changes their page
         var link       = tmp.getElementsByTagName("a");
         var linkString = link[52].toString();
 
-		for(var i = 0; i < linkString.length; i++)
-		    if(linkString.substring(i, i+11) === "ShowRatings")
-		        var profURL = 'http://www.ratemyprofessors.com/' + linkString.slice(i);
+        for(var i = 0; i < linkString.length; i++) {
+            if(linkString.substring(i, i+11) === "ShowRatings") {
+                var profURL = 'http://www.ratemyprofessors.com/' + linkString.slice(i);
+            }
+        }
 
-        // If a professor is found
+        // If prof is found, get html from teacher page and apply to tooltip
         if (profURL != 'http://www.ratemyprofessors.com/About.jsp') {
             // Set tooltip
             $(cell).tooltip("option", "content", "Professor Found!");
+            /*
+             THERE BE DRAGONS
+             THIS NO WORK
+             LOOKING AT THIS http://qtip2.com/guides
+             TRYING TO FIGURE OUT IF I NEED TO USE THE XMLHTTPREQUEST BELOW OR IF I CAN USE AJAX I THINK IT'S THE FORMER
+             */
+            console.log('href=\'' + profURL + '\'');
 
             // xmlHttpRequest for professor page
             chrome.runtime.sendMessage({
@@ -116,26 +129,25 @@ function setProfessorURL(cell, profNameWithSpace) {
 
                 // Finds html we want to display
                 var profGraphic = tmp.getElementsByClassName("ui-slider-range");
+                console.log(profGraphic);
 
                 var iframeWidth = '600';
                 var iframeHeight = '500';
-
                 var iframe = $('<iframe />').attr({
-                	src: profURL,
-                	alt: "Cannot Load",
-                	height: iframeHeight,
-                	width: iframeWidth
-                });
+                    src: profURL,
+                    alt: "Cannot Load",
+                    height: iframeHeight,
+                    width: iframeWidth,
+                })
                 $(cell).qtip({
-		            content: iframe,
-		            position: {
-				    	viewport: $(window)
-				    }
-		        });
+                    content: iframe,
+                    position: {
+                        viewport: $(window)
+                    }
+                });
+
             });
-        }
-        // If no prof is found
-        else {
+        } else { // If no prof is found
             profURL = returnNormalSearchUrl(profNameWithSpace);
             $(cell).tooltip("option", "content", "No professors found, click to search all schools.");
         }
@@ -146,7 +158,7 @@ function setProfessorURL(cell, profNameWithSpace) {
 }
 
 // Returns search url for specific school
-function returnSchoolSearchUrl(profNameWithSpace) {
+function returnSchoolSearchUrl(profNameWithSpace, schoolName) {
     return "http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolName=" + schoolName +
         "&queryoption=HEADER&query=" + encodeURI(profNameWithSpace) + "&facetSearch=true";
 }
@@ -157,7 +169,13 @@ function returnNormalSearchUrl(profNameWithSpace) {
 }
 
 
-// ENTRY POINT
-main('default1');
-main('default2');
+
+chrome.storage.sync.get("schoolName", function(obj) {
+        getProfessorNames('default1', obj.schoolName);
+        getProfessorNames('default2', obj.schoolName);
+    }
+);
+
+
+
 console.log("Script done");

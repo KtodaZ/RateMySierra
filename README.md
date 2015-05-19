@@ -17,7 +17,6 @@ If no teachers are found for Sierra College the link will update to search for a
 
 
 ##Revision History:
-- v1.0.3.1: Added google Analytics 
 - v1.0.3: Added new status tooltip to user interface! 
 - v1.0.2: bugfixes, added icon at top of page when script is loaded 
 - v1.0.1: bugfix 

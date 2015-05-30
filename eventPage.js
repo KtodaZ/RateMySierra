@@ -67,8 +67,8 @@ function returnUrl(profNameWithSpace) {
            "&queryoption=HEADER&query=" + encodeURI(profNameWithSpace) + "&facetSearch=true";
 }
 */
-
-//function to make xmlhttprequests
+/*
+// Function to make xmlhttprequests
 chrome.runtime.onMessage.addListener(function(request, sender, callback) {
     var xhr = new XMLHttpRequest();
 
@@ -83,7 +83,54 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
     xhr.send();
     return true; // prevents the callback from being called too early on return
 });
+*/
 
+// Function to make xmlhttprequests
+chrome.runtime.onMessage.addListener(function(request, sender, callback) {
+
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('GET', request.url, true);
+
+    xhr.onerror = function() {
+        callback();
+    };
+
+    xhr.onreadystatechange = function() {
+
+        if (/http:..www.ratemyprofessors.com.search.jsp.queryBy=teacherName&schoolName=/g.test(request.url)) {
+
+            if (xhr.readyState == 4) {
+                var tmp = document.createElement('div');
+                var linkString = xhr.responseText;
+
+                for (var i = 0; i < linkString.length; i++)
+                    if (linkString.substring(i, i + 11) === "ShowRatings")
+                        var profURL = 'http://www.ratemyprofessors.com/' + linkString.slice(i, i + 25);
+
+                console.log(profURL);
+
+                // If prof found
+                if (/http:..www.ratemyprofessors.com.ShowRatings.jsp.tid=\d\d\d\d\d/.test(profURL))
+                    callback(profURL);
+
+                // If no prof found or error
+                callback();
+            }
+        }
+
+        else {
+            callback();
+        }
+    };
+
+    xhr.send();
+
+    return true; // prevents the callback from being called too early on return
+});
+
+
+// Logs chrome storage changes
 chrome.storage.onChanged.addListener(function(changes, namespace) {
     for (key in changes) {
         var storageChange = changes[key];

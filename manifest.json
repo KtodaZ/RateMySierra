@@ -20,22 +20,17 @@
     "persistent": false
   },
 
-  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
-
   "permissions": [
     "tabs",
     "http://www.ratemyprofessors.com/",
+    "http://blog.ratemyprofessors.com/",
     "storage"
   ],
-
-  "options_ui": {
-    "page": "options.html",
-    "chrome_style": true
-  },
 
   "content_scripts": [
     {
       "matches": ["https://banprodssb.sierracollege.edu:8810/PROD/pw_sigsched.p_process"],
+      "exclue_matches": ["http://blog.ratemyprofessors.com/wp-content/uploads/2015/01/WNOs6.5_RMP_72x72.jpg"],
       "css": ["jquery-ui.min.css", "jquery.qtip.css"],
       "js": ["jquery-1.11.3.min.js", "jquery-ui.min.js", "jquery.qtip.js", "main.js"]
     }

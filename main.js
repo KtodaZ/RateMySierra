@@ -26,8 +26,10 @@
  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
  })();
  */
+var schoolName = 'Sierra+College';
 
 function main(className) {
+
     var cellArray     = document.getElementsByClassName(className);
 
     for(var i =0; i < cellArray.length; i++) {
@@ -53,6 +55,7 @@ function main(className) {
 
 // Creates tooltip
 function tooltip(cell) {
+
     $(document).ready(function () {
         $(cell).tooltip({
             content:". . . loading . . .",
@@ -63,9 +66,11 @@ function tooltip(cell) {
 
 // Dynamically calls setProfessorURL on mouse over
 function hover(cell, profNameWithSpace) {
+
     var haveProfUrl = false;
 
     $(cell).mouseenter(function() {
+
         // For removing tooltips that remain on the page(necessary)
         $('.ui-tooltip.ui-widget.ui-corner-all.ui-widget-content').remove();
 
@@ -79,30 +84,23 @@ function hover(cell, profNameWithSpace) {
 
 // Finds actual teacher URL. Returns search page for no professors
 function setProfessorURL(cell, profNameWithSpace) {
+
     var searchURL = returnSchoolSearchUrl(profNameWithSpace);
 
     // Uses XMLHttpRequest in eventPage.js to load content from RMP
-    // TODO: Find way to do this so that page is still secure
     chrome.runtime.sendMessage({
         url: searchURL
-    }, function (responseText) {
-        // Sets searchURL html to tmp element
-        var tmp        = document.createElement('div');
-        tmp.innerHTML  = responseText;
+    }, function (response) {
 
-        // Finds location of url on page
-        var link       = tmp.getElementsByTagName("a");
-        var linkString = link[52].toString();
-
-        for(var i = 0; i < linkString.length; i++)
-            if(linkString.substring(i, i+11) === "ShowRatings")
-                var profURL = 'http://www.ratemyprofessors.com/' + linkString.slice(i);
+        var profURL = response;
+        console.log(profURL);
 
         // If a professor is found
-        if (profURL != 'http://www.ratemyprofessors.com/About.jsp') {
+        if (profURL != null) {
             // Set tooltip
             $(cell).tooltip("option", "content", "Professor Found!");
 
+            /*
             // xmlHttpRequest for professor page
             chrome.runtime.sendMessage({
                 url: this.profURL
@@ -129,7 +127,10 @@ function setProfessorURL(cell, profNameWithSpace) {
                         viewport: $(window)
                     }
                 });
+
             });
+        */
+
         }
         // If no prof is found
         else {
@@ -139,6 +140,7 @@ function setProfessorURL(cell, profNameWithSpace) {
 
         // Applies new hyperlink to page
         cell.innerHTML = '<a href="'+ profURL + '" target="_blank" title="RMP Professor page">'+ profNameWithSpace + '</a>';
+
     });
 }
 
@@ -153,13 +155,13 @@ function returnNormalSearchUrl(profNameWithSpace) {
     return "http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&query=" + encodeURI(profNameWithSpace);
 }
 
+function sierraCollege() {
+    main('default1');
+    main('default2');
+    console.log("Script done");
+}
 
-chrome.storage.sync.get("schoolName", function(obj) {
-        main('default1', obj.schoolName);
-        main('default2', obj.schoolName);
-    }
-);
+sierraCollege();
 
 
 
-console.log("Script done");

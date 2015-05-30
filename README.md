@@ -17,6 +17,7 @@ If no teachers are found for Sierra College the link will update to search for a
 
 
 ###Revision History
+- v1.0.4: Fixed mixed security concerns and further optimizations.
 - v1.0.3: Added new status tooltip to user interface! 
 - v1.0.2: bugfixes, added icon at top of page when script is loaded 
 - v1.0.1: bugfix 
@@ -29,7 +30,7 @@ Last updated: May 29, 2015
 Please read these Terms of Service ("Terms", "Terms of Service") carefully before using the RateMySierra chrome extension (the "Service") operated by RateMySierra ("us", "we", or "our").
 RateMySierra is a chrome extension that can be downloaded at https://chrome.google.com/webstore/detail/ratemysierra/dkjpkkjecfhkapegkfhfgfngenmpjndo. Our source code is publicly viewable and found at https://github.com/KtodaZ/RateMySierra. 
 ###1. Terms
-By using this chrome extension, you are agreeing to be bound by these Terms and Conditions of Use, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these terms, you are prohibited from using or accessing this chrome extension and must uninstall it immediately. Your access to and use of the Service and is conditioned on your acceptance of and compliance with these Terms. These Terms apply to all visitors, users and others who access or use the Service.
+By using this chrome extension, you are agreeing to be bound by these Terms and Conditions of Use, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these terms, you are prohibited from using or accessing this chrome extension and must uninstall it immediately. Your access to and use of the Service and is conditioned on your acceptance of and compliance with these Terms. These Terms apply to all visitors, users and others who use the Service.
 
 The source code for RateMySierra can be found at https://github.com/KtodaZ/RateMySierra and is protected by GNU General Public License v3.0. Anyone can view this source code and analyze its contents. 
 

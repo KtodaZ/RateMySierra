@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "RateMySierra",
   "description": "Links Rate My professor to Sierra College's MySierra website",
-  "version": "1.0.3.1",
+  "version": "1.0.4",
 
   "author": "Kyle Szombathy",
   "author": "William Hexberg",
@@ -23,16 +23,14 @@
   "permissions": [
     "tabs",
     "http://www.ratemyprofessors.com/",
-    "http://blog.ratemyprofessors.com/",
     "storage"
   ],
 
   "content_scripts": [
     {
       "matches": ["https://banprodssb.sierracollege.edu:8810/PROD/pw_sigsched.p_process"],
-      "exclue_matches": ["http://blog.ratemyprofessors.com/wp-content/uploads/2015/01/WNOs6.5_RMP_72x72.jpg"],
-      "css": ["jquery-ui.min.css", "jquery.qtip.css"],
-      "js": ["jquery-1.11.3.min.js", "jquery-ui.min.js", "jquery.qtip.js", "main.js"]
+      "css": ["jquery-ui.min.css"],
+      "js": ["jquery-1.11.3.min.js", "jquery-ui.min.js", "main.js"]
     }
   ]
 }

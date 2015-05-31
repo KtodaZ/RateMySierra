@@ -1,9 +1,10 @@
 # RateMySierra
 ##About
-RateMySierra helps students choose their teachers by linking Rate My Professor to the Sierra College mySierra website.
+RateMySierra helps students choose their teachers by linking Rate My Professor to the Sierra College mySierra website. We all know that choosing classes can be a stressful and time consuming process and choosing a good teacher is critical. RateMySierra helps remedy this by turning all teacher names on the mySierra search page into hyperlinks to RateMyProfessor so that you can easily go to a teachers page. Additionally, we display professor ratings from RateMyProfessor on mouse over.
 We are a team of student developers looking to expand our skillset and networking.
 This extension is in its early stages and will have many more features to come.
 If you would like to contribute feel free to contact us.
+
 
 ###Instructions to use
 1. Log into mySierra and Click either "Class Schedule" or "Add, Drop or Withdraw from Classes > Select Term > Class Search"
@@ -35,7 +36,7 @@ By using this chrome extension, you are agreeing to be bound by these Terms and 
 The source code for RateMySierra can be found at https://github.com/KtodaZ/RateMySierra and is protected by GNU General Public License v3.0. Anyone can view this source code and analyze its contents. 
 
 ###2. Disclaimer
-The materials RateMySierra provides are provided "as is". RateMySierra makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties, including without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights. Further, RateMySierra does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the materials any site it may run on or otherwise relating to such materials or on any sites linked to this site.
+The materials RateMySierra may provide including those such as "Overall Quality", "Helpfulness", "Clarity", "Easiness", "Average Grade", "Hotness" and any other information relating to teacher names are are not owned or controlled by RateMySierra. The materials RateMySierra provides are provided "as is". RateMySierra makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties, including without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights. Further, RateMySierra does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the materials any site it may run on or otherwise relating to such materials or on any sites linked to this site.
 
 ###3. Content of other websites
 Our Service may modify (“run” on) the displayed data of or contain links to third-party web sites or services that are not owned or controlled by RateMySierra. 
@@ -58,7 +59,7 @@ If you are the owner of a site that RateMySierra runs on, or if you require any 
 
 #Privacy Policy
 
-Last updated: May 29, 2015
+Last updated: May 30, 2015
 
 RateMySierra does not collect or save any information from users or the sites it runs on. 
 

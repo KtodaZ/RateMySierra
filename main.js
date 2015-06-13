@@ -27,10 +27,18 @@
  })();
  */
 var schoolName = 'Sierra+College';
+var defaultMessage = 'Hover over any teacher name to view their ratings';
+
+function sierraCollege() {
+    main('.default1');
+    main('.default2');
+    console.log("Script done");
+}
 
 function main(className) {
+    console.log("script initialized");
 
-    var cellArray     = document.getElementsByClassName(className);
+    var cellArray     = $(className);
 
     for(var i =0; i < cellArray.length; i++) {
         // Gets text from object array and splits into temp strings
@@ -42,7 +50,7 @@ function main(className) {
             var profName = profTempArray[0] + " " + profTempArray[1];
 
             // Creates placeholder hyperlinks
-            var url = '<a href="'+ returnNormalSearchUrl(profName) + '" target="_blank" title="RMP Search page">'+ profName + '</a>';
+            var url = '<a class="link" href="'+ returnNormalSearchUrl(profName) + '" target="_blank" title="">'+ profName + '</a>';
             $(cellArray[i]).text('');
             cellArray[i].innerHTML = url;
 
@@ -57,10 +65,32 @@ function main(className) {
 function tooltip(cell) {
 
     $(document).ready(function () {
-        $(cell).tooltip({
-            content:". . . loading . . .",
-            hide: { effect: "fade", duration: 200 }
-        })
+
+        $(cell).qtip({
+            id: 'myTooltip',
+            content: {
+                text: '. . . loading . . .'
+            },
+            style: {
+                classes: 'qtip-bootstrap',
+                width: 180,
+                position: {
+                    at: 'mouse'
+                }
+            },
+            show: {
+                solo: true,
+                ready: true,
+                effect: function(offset) {
+                    $(this).slideDown(100); // "this" refers to the tooltip
+                }
+            },
+            hide: {
+                effect: function(offset) {
+                    $(this).slideDown(100); // "this" refers to the tooltip
+                }
+            }
+        });
     });
 }
 
@@ -70,10 +100,6 @@ function hover(cell, profNameWithSpace) {
     var haveProfUrl = false;
 
     $(cell).mouseenter(function() {
-
-        // For removing tooltips that remain on the page(necessary)
-        $('.ui-tooltip.ui-widget.ui-corner-all.ui-widget-content').remove();
-
         // Checks hyperlink so setProfessorURL only loads once
         if (!haveProfUrl) {
             setProfessorURL(cell, profNameWithSpace);
@@ -87,7 +113,7 @@ function setProfessorURL(cell, profNameWithSpace) {
 
     var searchURL = returnSchoolSearchUrl(profNameWithSpace);
 
-    // Uses XMLHttpRequest in eventPage.js to load content from RMP
+    // Uses XMLHttpRequest in eventPage.js to load ProfURL
     chrome.runtime.sendMessage({
         url: searchURL
     }, function (response) {
@@ -97,49 +123,38 @@ function setProfessorURL(cell, profNameWithSpace) {
 
         // If a professor is found
         if (profURL != null) {
-            // Set tooltip
-            $(cell).tooltip("option", "content", "Professor Found!");
 
-            /*
             // xmlHttpRequest for professor page
             chrome.runtime.sendMessage({
-                url: this.profURL
-            }, function (responseText) {
-                // Same thing as before, Sets profURL html to tmp element
-                var tmp = document.createElement('div');
-                tmp.innerHTML = responseText;
+                url: profURL
+            }, function (response) {
+                var ratingArray = response;
+                //console.log(ratingArray);
 
-                // Finds html we want to display
-                var profGraphic = tmp.getElementsByClassName("ui-slider-range");
+                $(cell).qtip('option', 'content.text',
+                    '<div id=\"contentBox\" style=\"margin:0px auto; width:100%\">' +
 
-                var iframeWidth = '600';
-                var iframeHeight = '500';
+                    '<div id=\"column1\" style=\"float:left; margin:0; width:80%;\">' +
+                    "Overall Quality:<br>Average Grade:<br>Helpfulness:<br>Clarity:<br>Easiness:" +
+                    '</div>' +
 
-                var iframe = $('<iframe />').attr({
-                    src: profURL,
-                    alt: "Cannot Load",
-                    height: iframeHeight,
-                    width: iframeWidth
-                });
-                $(cell).qtip({
-                    content: iframe,
-                    position: {
-                        viewport: $(window)
-                    }
-                });
+                    '<div id=\"column2\" style=\"float:left; margin:0;width:20%;\">' +
+                    ratingArray[1] + "<br>" + ratingArray[0]+ "<br>" + ratingArray[2] + "<br>" + ratingArray[3] + "<br>" + ratingArray[4] +
+                    '</div>' +
 
+                    '</div>');
+                $(cell).qtip('option', 'content.title', profNameWithSpace);
             });
-        */
-
         }
         // If no prof is found
         else {
             profURL = returnNormalSearchUrl(profNameWithSpace);
-            $(cell).tooltip("option", "content", "No professors found, click to search all schools.");
+            //$(cell).tooltip("option", "content", "No professors found, click to search all schools.");
+            $(cell).qtip('option', 'content.text',"No professors found, click to search all schools.");
         }
 
         // Applies new hyperlink to page
-        cell.innerHTML = '<a href="'+ profURL + '" target="_blank" title="RMP Professor page">'+ profNameWithSpace + '</a>';
+        cell.innerHTML = '<a class="link" href="'+ profURL + '" target="_blank" title="">'+ profNameWithSpace + '</a>';
 
     });
 }
@@ -155,13 +170,5 @@ function returnNormalSearchUrl(profNameWithSpace) {
     return "http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&query=" + encodeURI(profNameWithSpace);
 }
 
-function sierraCollege() {
-    main('default1');
-    main('default2');
-    console.log("Script done");
-}
-
 sierraCollege();
-
-
 

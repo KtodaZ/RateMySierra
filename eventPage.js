@@ -19,7 +19,7 @@ var schoolName = "sierra + college";
 
 // Displays icon in address bar when script is active
 function showPageAction( tabId, changeInfo, tab ) {
-    if(tab.url == "https://banprodssb.sierracollege.edu:8810/PROD/pw_sigsched.p_process"){
+    if(tab.url == "https://banprodssb.sierracollege.edu:8810/PROD/pw_sigsched.p_process" || tab.url == "https://cmsweb.csus.edu/psp/HSACPRD/EMPLOYEE/HRMS/c/SA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL?PORTALPARAM_PTCNAV=HC_SSS_STUDENT_CENTER&EOPP.SCNode=HRMS&EOPP.SCPortal=EMPLOYEE&EOPP.SCName=CO_EMPLOYEE_SELF_SERVICE&EOPP.SCLabel=Self_Service&EOPP.SCPTfname=CO_EMPLOYEE_SELF_SERVICE&FolderPath=PORTAL_ROOT_OBJECT.CO_EMPLOYEE_SELF_SERVICE.HC_SSS_STUDENT_CENTER&IsFolder=false"){
         chrome.pageAction.show(tabId);
     }
 }
@@ -90,37 +90,99 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
 
     var xhr = new XMLHttpRequest();
 
+    // Opens URL
     xhr.open('GET', request.url, true);
 
+    // If URL retrieval is error
     xhr.onerror = function() {
         callback();
     };
 
     xhr.onreadystatechange = function() {
+        // If xhr is ready
+        if (xhr.readyState == 4) {
 
-        if (/http:..www.ratemyprofessors.com.search.jsp.queryBy=teacherName&schoolName=/g.test(request.url)) {
+            var htmlString = xhr.responseText; // Sets entire html of page to string
 
-            if (xhr.readyState == 4) {
-                var tmp = document.createElement('div');
-                var linkString = xhr.responseText;
+            // If url is teacher search page
+            if (/http:..www.ratemyprofessors.com.search.jsp.queryBy=teacherName&schoolName=/g.test(request.url)) {
+                
+                var regex = /ShowRatings.jsp\?tid=\d*/g; // Regex for finding place in page where prof link is located
 
-                for (var i = 0; i < linkString.length; i++)
-                    if (linkString.substring(i, i + 11) === "ShowRatings")
-                        var profURL = 'http://www.ratemyprofessors.com/' + linkString.slice(i, i + 25);
+                if (regex.test(htmlString)) {
+                    var postFixUrl = regex.exec(htmlString);
 
-                console.log(profURL);
+                    if (postFixUrl !== null) {
+                        var profURL = 'http://www.ratemyprofessors.com/' + postFixUrl;
+                        console.log(profURL);
+                        callback(profURL);
+                    }
+                    else callback();
+                }
+                else callback();
+            }
 
-                // If prof found
-                if (/http:..www.ratemyprofessors.com.ShowRatings.jsp.tid=\d\d\d\d\d/.test(profURL))
-                    callback(profURL);
+            // If url is profURL
+            else if (/http:..www.ratemyprofessors.com.ShowRatings.jsp.tid=\d*/.test(request.url)) {
+                var overallQualityRegex = /<div class="grade">[1-5]\.\d/;
+                var ratingsRegex = /<div class="rating">[1-5]\.\d/g;
+                var ratingRegex = /[1-5]\.\d/; // Regex to sort out all ratings in a d.d format
+                var averageGradeRegex  = /<div class="grade">[A-F](\+|-|)/; // Regex to find grade in page
+                var hotnessRegex = /cold-chili\.png/;
+                var hotness;
+                var ratingArray = [];
 
-                // If no prof found or error
+                gradeFinder(averageGradeRegex, 0, 19);   // Grade letter
+                gradeFinder(overallQualityRegex, 0, 19); // Overall Quality
+                ratingFinder(ratingsRegex, 0, 20);        // Helpfullness, Clarity, Easiness
+
+                function gradeFinder(regex, arrayNumber, sliceNumber) {
+                    if (regex.test(htmlString)) {
+                        var data = "" + regex.exec(htmlString)[arrayNumber]; // exec is an array, transfers exec[0] to string
+
+                        data = data.slice(sliceNumber);
+                        console.log(data);
+                        ratingArray.push(data);
+                    }   else {
+                        ratingArray.push("N/A")
+                    }
+                }
+
+                function ratingFinder(regex, arrayNumber, sliceNumber) {
+                    for(i = 0; i < 3; i++) {
+                        var data = "" + regex.exec(htmlString); // exec is an array, transfers exec[0] to string
+
+                        data = data.slice(sliceNumber);
+                        console.log(data);
+                        ratingArray.push(data);
+                    }
+                }
+
+
+                // If no grades found
+
+
+                /* Works, but looks cluttered on main
+                // Finds hotness
+                if (hotnessRegex.test(htmlString)) {
+                    hotness = "no";
+                    ratingArray.push(hotness);
+                }
+
+                else {
+                    hotness = "yes";
+                    ratingArray.push(hotness);
+                }
+                */
+
+                console.log(ratingArray);
+                callback(ratingArray)
+            }
+
+            // If wrong URL is sent
+            else {
                 callback();
             }
-        }
-
-        else {
-            callback();
         }
     };
 

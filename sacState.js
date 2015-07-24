@@ -37,10 +37,10 @@ var timers = [];
 function sacState() {
     $(document).ready(function()
     {
-        // Clears all timers so they don't stack
-        for (var i = 0; i < timers.length; i++) {
+        // Clears all timers so they don't stack and create lag
+        for (var i = 0; i < timers.length; i++)
             clearTimeout(timers[i]);
-        }
+
         // Removes ghost qtips from page if any
         $(".qtip").remove();
 
@@ -71,13 +71,13 @@ function htmlChecker() {
 
         // Timer to check if page is changed
         timers.push(setInterval(function () {
-
+            
             // Looks for "link" class in html document to see if our html is injected
             if ($(".link",iframeBody).length == 0) {
                 console.log("No professors found on current page, restarting search");
                 sacState();
             }
-        }, 5000));
+        }, 3000));
     } else {
 
         // Waits x seconds to check page again
@@ -98,6 +98,7 @@ function main(className, pageHtml, checkForTeachers) {
         // Gets text from object array and splits into temp strings
         var profName;
         var profTempArray = [];
+        var profNameWithFormatting = $(cellArray[i]).html();
 
         // Sorts out potential teacher names by space and puts into array
         profTempArray = $(cellArray[i]).text().trim().split(/[ ]+/);
@@ -105,30 +106,44 @@ function main(className, pageHtml, checkForTeachers) {
 
         try {
             // To search for specific regex in sac states website
-            var regex1 = new RegExp(profTempArray[0]);
+            var regex0 = new RegExp(profTempArray[0]);
             var regex2 = new RegExp(profTempArray[2]);
         } catch(e) { // For Regex errors
         }
 
-        // Sac State specific search function for double line prof names
-        if (profTempArray.length == 3
-            && regex1.test(profTempArray[1]) && regex2.test(profTempArray[1])
-            && /[A-Z]/.test(profTempArray[0]) && /[A-Z]/.test(profTempArray[2])
-            && !/\./.test(profTempArray[0]) && !/\./.test(profTempArray[1]) && !/\./.test(profTempArray[2])
+        // Global search function
+        if (profTempArray.length === 2
+            && checkIfTeacherNameInArray(profTempArray)
+            && !/\./.test(profTempArray[0]) && !/\./.test(profTempArray[1])
             && profTempArray.indexOf("Online") === -1) {
 
+            var staffLocation = searchStringInArray ("Staff", profTempArray);
+
+            if (staffLocation > -1) {
+                profTempArray[staffLocation] = profTempArray[staffLocation].replace(/Staff/g,'');
+            }
+
+            profName = profTempArray[0] + " " + profTempArray[1];
+            mainRunScript();
+        }
+
+        // Specific search function for double line prof names
+        if (profTempArray.length == 3
+            && regex0.test(profTempArray[1]) && regex2.test(profTempArray[1])
+            && checkIfTeacherNameInArray(profTempArray)
+            && !/\./.test(profTempArray[0]) && !/\./.test(profTempArray[1]) && !/\./.test(profTempArray[2])
+            && profTempArray.indexOf("Online") === -1 && searchStringInArray("Staff", profTempArray) === -1) {
+
+            //console.log(profTempArray);
             profName = profTempArray[0] + " " + profTempArray[2];
             mainRunScript();
         }
 
-        // Global search function
-        if (profTempArray.length === 2
-            && /[A-Z]/.test(profTempArray[0]) && /[A-Z]/.test(profTempArray[1])
-            && !/\./.test(profTempArray[0]) && !/\./.test(profTempArray[1])
-            && profTempArray.indexOf("Online") === -1) {
-
-            profName = profTempArray[0] + " " + profTempArray[1];
-            mainRunScript();
+        function checkIfTeacherNameInArray(strArray) {
+            for (var counter = 0, j=0; j<strArray.length; j++) {
+                if (/[A-Z]/.test(profTempArray[j]) && !/\./.test(profTempArray[j])) counter++;
+            }
+            return (counter == strArray.length);
         }
 
         function mainRunScript() {
@@ -137,14 +152,14 @@ function main(className, pageHtml, checkForTeachers) {
                 return true;
 
             // Creates placeholder hyperlinks
-            var url = '<a class="link" href="'+ returnNormalSearchUrl(profName) + '" target="_blank" title="RMP Search page">'+ profName + '</a>';
+            var url = '<a class="link" href="'+ returnNormalSearchUrl(profName) + '" target="_blank" title="RMP Search page">'+ profNameWithFormatting + '</a>';
             $(cellArray[i]).text('');
             cellArray[i].innerHTML = url;
             numberOfProfs++;
 
             // Call for tooltips and dynamic content load
             tooltip(cellArray[i], pageHtml);
-            hover(cellArray[i], profName);
+            hover(cellArray[i], profName, profNameWithFormatting);
         }
     }
 
@@ -201,7 +216,7 @@ function tooltip(cell, pageHtml) {
 }
 
 // Dynamically calls setProfessorURL on mouse over
-function hover(cell, profNameWithSpace) {
+function hover(cell, profNameWithSpace, profNameWithFormatting) {
 
     var haveProfUrl = false;
 
@@ -211,18 +226,18 @@ function hover(cell, profNameWithSpace) {
         if (!haveProfUrl) {
             $(cell).qtip('option', 'content.title', '');
             $(cell).qtip('option', 'content.text', '. . . loading . . .');
-            setProfessorURL(cell, profNameWithSpace);
+            setProfessorURL(cell, profNameWithSpace, profNameWithFormatting);
             haveProfUrl = true;
         }
     });
 }
 
-// Finds actual teacher URL. Returns search page for no professors
-function setProfessorURL(cell, profNameWithSpace) {
+// Uses chrome function to search for proffessor, gets URL and Ratings
+function setProfessorURL(cell, profNameWithSpace, profNameWithFormatting) {
 
     var searchURL = returnSchoolSearchUrl(profNameWithSpace);
 
-    // Uses XMLHttpRequest in eventPage.js to load ProfURL
+    // Gets teacher URL
     chrome.runtime.sendMessage({
         url: searchURL
     }, function (response) {
@@ -233,26 +248,23 @@ function setProfessorURL(cell, profNameWithSpace) {
         // If a professor is found
         if (profURL != null) {
 
-            // xmlHttpRequest for professor page
+            // Gets Ratings
             chrome.runtime.sendMessage({
                 url: profURL
             }, function (response) {
                 var ratingArray = response;
                 //console.log(ratingArray);
 
-                // Sets tooltips
+                // Sets tooltips implementing html
                 $(cell).qtip('option', 'content.text',
-                '<div id=\"contentBox\" style=\"margin:0px auto; width:100%\">' +
-
-                '<div id=\"column1\" style=\"float:left; margin:0; width:80%;\">' +
-                "Overall Quality:<br>Average Grade:<br>Helpfulness:<br>Clarity:<br>Easiness:" +
-                '</div>' +
-
-                '<div id=\"column2\" style=\"float:left; margin:0;width:20%;\">' +
-                 ratingArray[1] + "<br>" + ratingArray[0]+ "<br>" + ratingArray[2] + "<br>" + ratingArray[3] + "<br>" + ratingArray[4] +
-                '</div>' +
-
-                '</div>');
+                    '<div id=\"contentBox\" style=\"margin:0px auto; width:100%\">' +
+                    '<div id=\"column1\" style=\"float:left; margin:0; width:80%;\">' +
+                    "Overall Quality:<br>Average Grade:<br>Helpfulness:<br>Clarity:<br>Easiness:" +
+                    '</div>' +
+                    '<div id=\"column2\" style=\"float:left; margin:0;width:20%;\">' +
+                     ratingArray[1] + "<br>" + ratingArray[0]+ "<br>" + ratingArray[2] + "<br>" + ratingArray[3] + "<br>" + ratingArray[4] +
+                    '</div>' +
+                    '</div>');
 
                 $(cell).qtip('option', 'content.title', "<b>" + profNameWithSpace + "</b>");
             });
@@ -261,13 +273,57 @@ function setProfessorURL(cell, profNameWithSpace) {
         else {
             profURL = returnNormalSearchUrl(profNameWithSpace);
             //$(cell).tooltip("option", "content", "No professors found, click to search all schools.");
-            $(cell).qtip('option', 'content.text',"No professors found for" + schoolNameString + ", click to search all schools.");
+            $(cell).qtip('option', 'content.title',"<b>N/A</b>");
+            $(cell).qtip('option', 'content.text',"No professors found for " + schoolNameString + ", click to search all schools.");
         }
 
         // Applies new hyperlink to page
-        cell.innerHTML = '<a class="link" href="'+ profURL + '" target="_blank" title="">'+ profNameWithSpace + '</a>';
+        cell.innerHTML = '<a class="link" href="'+ profURL + '" target="_blank" title="">'+ profNameWithFormatting + '</a>';
 
     });
+}
+
+/*
+ // Messing with chrome history
+ window.onhashchange = function() {
+ console.log("test");
+ };
+ window.onload = function () {
+ if (typeof history.pushState === "function") {
+ history.pushState("jibberish", null, null);
+ window.onpopstate = function () {
+ history.pushState('newjibberish', null, null);
+ // Handle the back (or forward) buttons here
+ // Will NOT handle refresh, use onbeforeunload for this.
+ console.log("Back/forward button pressed");
+ };
+ }
+ else {
+ var ignoreHashChange = true;
+ window.onhashchange = function () {
+ if (!ignoreHashChange) {
+ ignoreHashChange = true;
+ window.location.hash = Math.random();
+ // Detect and redirect change here
+ // Works in older FF and IE9
+ // * it does mess with your hash symbol (anchor?) pound sign
+ // delimiter on the end of the URL
+
+ }
+ else {
+ ignoreHashChange = false;
+ }
+ };
+ }
+ };
+ */
+
+// Searches for inputed string in a string array
+function searchStringInArray (str, strArray) {
+    for (var j=0; j<strArray.length; j++) {
+        if (strArray[j].match(str)) return j;
+    }
+    return -1;
 }
 
 // Returns search url for specific school
@@ -281,5 +337,6 @@ function returnNormalSearchUrl(profNameWithSpace) {
     return "http://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&query=" + encodeURI(profNameWithSpace);
 }
 
+// Entry Point
 sacState();
 

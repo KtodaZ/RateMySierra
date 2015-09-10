@@ -1,4 +1,4 @@
-![alt tag](hhttp://imgur.com/oq1hzoi)
+<img src="http://imgur.com/oq1hzoi.png" alt="banner">
 
 # RateMySierra/RateMyCSUS
 

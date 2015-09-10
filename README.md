@@ -1,3 +1,5 @@
+![alt tag](hhttp://imgur.com/oq1hzoi)
+
 # RateMySierra/RateMyCSUS
 
 ##About

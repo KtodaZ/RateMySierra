@@ -1,6 +1,4 @@
-<img src="http://imgur.com/oq1hzoi.png" alt="banner">
-
-# RateMySierra/RateMyCSUS
+# RateMySierra
 
 ##About
 RateMySierra helps Sacramento State CSUS students and Sierra College students choose their teachers by showing inline teacher ratings and provides links to the RateMyProfessor website.

@@ -1,7 +1,7 @@
 # RateMySierra
 
 ##About
-RateMySierra helps Sacramento State CSUS students and Sierra College students choose their teachers by showing inline teacher ratings and provides links to the RateMyProfessor website.
+RateMySierra helps Sierra College students choose their teachers by showing inline teacher ratings and provides links to the RateMyProfessor website.
 
 Sierra College:   https://chrome.google.com/webstore/detail/ratemysierra/dkjpkkjecfhkapegkfhfgfngenmpjndo
 Sacramento State: https://chrome.google.com/webstore/detail/ratemycsus/hmnppfabdclolfimkdbhgjkmfgoahhek
